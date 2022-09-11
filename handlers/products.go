@@ -17,6 +17,16 @@ func NewProducts (l *log.Logger) *ProductHandler{
 
 
 func (p *ProductHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)  {
+  if r.Method == http.MethodGet{
+    p.getProducts(w,r)
+    return
+  }
+
+  w.WriteHeader(http.StatusNotImplemented)
+  p.l.Printf("Recieved a non-get Request for %s :: %s\n", r.Method, r.URL)
+}
+
+func (p *ProductHandler) getProducts(w http.ResponseWriter, r *http.Request)  {
   p.l.Printf("Recieved a Read Request for %s :: %s\n", r.Method, r.URL)
   lp := data.GetProducts() 
   //Convert to json
@@ -25,3 +35,4 @@ func (p *ProductHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)  {
     http.Error(w, "Unable to marshal data", http.StatusInternalServerError)
   }
 }
+

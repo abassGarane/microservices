@@ -1,30 +1,27 @@
 package handlers
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 
 	"github.com/abassGarane/microservices/data"
 )
 
-type Products struct{
+type ProductHandler struct{
   l *log.Logger
 }
 
-func NewProducts (l *log.Logger) *Products{
-  return &Products{l}
+func NewProducts (l *log.Logger) *ProductHandler{
+  return &ProductHandler{l}
 }
 
 
-func (p *Products) ServeHTTP(w http.ResponseWriter, r *http.Request)  {
+func (p *ProductHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)  {
   p.l.Printf("Recieved a Read Request for %s :: %s\n", r.Method, r.URL)
   lp := data.GetProducts() 
   //Convert to json
-  d, err := json.Marshal(lp)
+  err := lp.ToJson(w)
   if err != nil{
     http.Error(w, "Unable to marshal data", http.StatusInternalServerError)
   }
-  // Write as Response
-  w.Write(d)
 }

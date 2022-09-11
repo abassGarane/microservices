@@ -19,7 +19,7 @@ func main()  {
 
   l := log.New(os.Stdout, "Product Api ::", log.LstdFlags)
 
-  h := handlers.NewHelloHandler(l)
+  h := handlers.NewProducts(l)
 
 	mux.Handle("/", h)
 

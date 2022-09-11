@@ -1,40 +1,30 @@
 package handlers
 
-import "time"
+import (
+	"encoding/json"
+	"log"
+	"net/http"
 
-type Product struct{
-  ID int
-  Name string
-  Description string
-  Price float32
-  SKU string
-  CreatedAt string
-  UpdatedAt string
-  DeletedAt string
+	"github.com/abassGarane/microservices/data"
+)
+
+type Products struct{
+  l *log.Logger
+}
+
+func NewProducts (l *log.Logger) *Products{
+  return &Products{l}
 }
 
 
-// Simple in-memory products storage
-var productList = []*Product{
-  {
-    ID:1,
-    Name:"Rice",
-    Description: "A bag of rice",
-    Price:2200,
-    SKU: "cdcd34",
-    CreatedAt: time.Now().UTC().String(),
-    UpdatedAt: time.Now().UTC().String(),
-    DeletedAt: time.Now().UTC().String(),
-  },
- {
-    ID:2,
-    Name:"Beef",
-    Description: "A real pound of beef",
-    Price:800.90,
-    SKU: "cdcd66",
-    CreatedAt: time.Now().UTC().String(),
-    UpdatedAt: time.Now().UTC().String(),
-    DeletedAt: time.Now().UTC().String(),
-  },
-
+func (p *Products) ServeHTTP(w http.ResponseWriter, r *http.Request)  {
+  p.l.Printf("Recieved a Read Request for %s :: %s\n", r.Method, r.URL)
+  lp := data.GetProducts() 
+  //Convert to json
+  d, err := json.Marshal(lp)
+  if err != nil{
+    http.Error(w, "Unable to marshal data", http.StatusInternalServerError)
+  }
+  // Write as Response
+  w.Write(d)
 }

@@ -13,6 +13,8 @@ type Product struct{
   DeletedAt string
 }
 
+
+// Simple in-memory products storage
 var productList = []*Product{
   {
     ID:1,

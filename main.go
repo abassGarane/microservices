@@ -1,9 +1,11 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"os"
+	"os/signal"
 	"time"
 
 	"github.com/abassGarane/microservices/handlers"
@@ -29,5 +31,19 @@ func main()  {
 		ReadTimeout: time.Second * 60,
 		WriteTimeout: time.Second * 60,
 	}
-	s.ListenAndServe()
+	go func ()  {
+		err := s.ListenAndServe()
+		if err != nil{
+			l.Fatal(err)
+		}
+	}()
+
+	sigChan := make(chan os.Signal)
+	signal.Notify(sigChan, os.Interrupt)
+	signal.Notify(sigChan, os.Kill)
+
+	sig := <- sigChan
+	l.Printf("Commencing graceful shutdown %s", sig)
+	ctx,_:= context.WithTimeout(context.Background(), time.Second*30)
+	s.Shutdown(ctx)
 }

@@ -1,10 +1,12 @@
 package main
 
 import (
-	"fmt"
-	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
+	"time"
+
+	"github.com/abassGarane/microservices/handlers"
 )
 
 
@@ -13,18 +15,19 @@ func main()  {
   // Define a new router / servemux
   mux := http.NewServeMux()
 
-  // map urls to routes
-  mux.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-    d,err := ioutil.ReadAll(r.Body)
-    if err != nil{
-    //   w.WriteHeader(http.StatusBadRequest)
-    //   w.Write([]byte("Oops! Could not parse request !"))
-      http.Error(w, "Could not parse request", http.StatusBadRequest)
-      return
-    }
-    log.Println("Hello from page")
-    fmt.Fprintf(w,"Response is %s\n", d)
-  })
+  l := log.New(os.Stdout, "Product Api ::", log.LstdFlags)
 
-  http.ListenAndServe(":8080", mux)
+  h := handlers.NewHelloHandler(l)
+
+	mux.Handle("/", h)
+
+	// Create a server
+	s := &http.Server{
+		IdleTimeout: time.Second * 60,
+		Addr: ":8080",
+		Handler: mux,
+		ReadTimeout: time.Second * 60,
+		WriteTimeout: time.Second * 60,
+	}
+	s.ListenAndServe()
 }

@@ -9,19 +9,33 @@ import (
 	"time"
 
 	"github.com/abassGarane/microservices/handlers"
+	"github.com/gorilla/mux"
 )
 
 
 func main()  {
 
   // Define a new router / servemux
-  mux := http.NewServeMux()
+  // mux := http.NewServeMux()
+  
+  mux := mux.NewRouter()
 
   l := log.New(os.Stdout, "Product Api ::", log.LstdFlags)
 
   h := handlers.NewProducts(l)
+  GetRouter := mux.Methods(http.MethodGet).Subrouter()
+  GetRouter.HandleFunc("/", h.GetProducts)
 
-	mux.Handle("/", h)
+  //PUT
+  PutRouter := mux.Methods(http.MethodPut).Subrouter()
+  PutRouter.HandleFunc("/{id:[0-9]+}", h.UpdateProduct)
+
+  //POST 
+  PostRouter := mux.Methods(http.MethodPost).Subrouter()
+  PostRouter.HandleFunc("/", h.AddProduct)
+
+	// mux.Handle("/products", h).Methods("GET")
+
 
 	// Create a server
 	s := &http.Server{

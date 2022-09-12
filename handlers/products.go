@@ -1,13 +1,12 @@
 package handlers
 
 import (
-	"fmt"
 	"log"
 	"net/http"
-	"regexp"
 	"strconv"
 
 	"github.com/abassGarane/microservices/data"
+	"github.com/gorilla/mux"
 )
 
 type ProductHandler struct{
@@ -20,36 +19,9 @@ func NewProducts (l *log.Logger) *ProductHandler{
 
 
 func (p *ProductHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)  {
-  if r.Method == http.MethodGet{
-    p.getProducts(w,r)
-    return
-  }
-
-  if r.Method == http.MethodPost{
-  	p.addProduct(w,r)
-  	return
-  }
-  if r.Method == http.MethodPut{
-  	url := r.URL.Path
-  	// re, _ := regexp.Compile("/(.*)")
-  	// values := re.FindStringSubmatch(p)
-  	reg := regexp.MustCompile(`/([0-9]+)`)
-  	values := reg.FindAllStringSubmatch(url, -1)
-  	if len(values) !=1 || len(values[0]) != 2 {
-  		http.Error(w,"Error parsing url", http.StatusBadRequest)
-  		return
-  	}
-  	id,_ := strconv.Atoi(values[0][1])
-		fmt.Printf("Parsed id :: %d", id)
-		p.updateProduct(w,r,id)
-		return
-  }
-	// Catch all router
-  w.WriteHeader(http.StatusNotImplemented)
-  p.l.Printf("Recieved a non-get Request for %s :: %s\n", r.Method, r.URL)
 }
 
-func (p *ProductHandler) getProducts(w http.ResponseWriter, r *http.Request)  {
+func (p *ProductHandler) GetProducts(w http.ResponseWriter, r *http.Request)  {
   p.l.Printf("Recieved a %s request from :: %s", r.Method, r.URL)
   lp := data.GetProducts() 
   //Convert to json
@@ -59,7 +31,7 @@ func (p *ProductHandler) getProducts(w http.ResponseWriter, r *http.Request)  {
   }
 }
 
-func (p *ProductHandler)addProduct(w http.ResponseWriter, r *http.Request)  {
+func (p *ProductHandler)AddProduct(w http.ResponseWriter, r *http.Request)  {
   p.l.Printf("Recieved a %s request from :: %s", r.Method, r.URL)
 
 	prod := &data.Product{}
@@ -70,11 +42,18 @@ func (p *ProductHandler)addProduct(w http.ResponseWriter, r *http.Request)  {
 	data.AddProduct(prod)
 }
 
-func (p *ProductHandler)updateProduct(w http.ResponseWriter, r *http.Request, id int)  {
+func (p *ProductHandler)UpdateProduct(w http.ResponseWriter, r *http.Request)  {
   p.l.Printf("Recieved a %s request from :: %s", r.Method, r.URL)
+	vars := mux.Vars(r)
+	id , err:= strconv.Atoi(vars["id"])
+
+	if err != nil{
+		http.Error(w,"Could not parse id", http.StatusBadRequest)
+		return
+	}
 
 	prod := &data.Product{}
-	err:= prod.FromJSON(r.Body)
+	err = prod.FromJSON(r.Body)
 	if err != nil{
 		http.Error(w,"Could not unmarshal object", http.StatusBadRequest)
 	}

@@ -30,18 +30,19 @@ func (p *ProductHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)  {
   	return
   }
   if r.Method == http.MethodPut{
-  	p := r.URL.Path
+  	url := r.URL.Path
   	// re, _ := regexp.Compile("/(.*)")
   	// values := re.FindStringSubmatch(p)
   	reg := regexp.MustCompile(`/([0-9]+)`)
-  	values := reg.FindAllStringSubmatch(p, -1)
-  	if len(values) !=1 || len(values[0][1]) != 1 {
+  	values := reg.FindAllStringSubmatch(url, -1)
+  	if len(values) !=1 || len(values[0]) != 2 {
   		http.Error(w,"Error parsing url", http.StatusBadRequest)
   		return
   	}
   	id,_ := strconv.Atoi(values[0][1])
 		fmt.Printf("Parsed id :: %d", id)
-
+		p.updateProduct(w,r,id)
+		return
   }
 	// Catch all router
   w.WriteHeader(http.StatusNotImplemented)
@@ -77,7 +78,11 @@ func (p *ProductHandler)updateProduct(w http.ResponseWriter, r *http.Request, id
 	if err != nil{
 		http.Error(w,"Could not unmarshal object", http.StatusBadRequest)
 	}
-	data.AddProduct(prod)
+	err = data.UpdateProduct(id,prod)
+	if err == data.ErrorProductNotFound{
+		http.Error(w,"Could not find product", http.StatusBadRequest)
+		return
+	}
 }
 
 

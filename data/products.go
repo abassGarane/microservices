@@ -2,8 +2,9 @@ package data
 
 import (
 	"encoding/json"
-	"time"
+	"fmt"
 	"io"
+	"time"
 )
 
 type Product struct{
@@ -27,6 +28,32 @@ func AddProduct(p *Product)  {
 	productList = append(productList, *p)
 }
 
+func UpdateProduct(id int, p *Product)error  {
+	p,pos, err := findProduct(id)
+	if err != nil{
+		return err
+	}
+	p.ID = id
+	productList[pos] = *p
+	return nil
+}
+
+var ErrorProductNotFound = fmt.Errorf("Product not found")
+
+func findProduct(id int) (*Product,int,error)  {
+	// for i := 0; i < len(productList); i++ {
+		// if productList[i].ID == id{
+			// return &productList[i],nil
+		// }
+	// }
+	for i, p := range productList{
+		if p.ID == id{
+			return &p, i,nil
+		}
+	}
+	return nil,-1,ErrorProductNotFound
+}
+
 func GetNextID()int  {	
 	id := productList[len(productList) - 1].ID
 	return id +1
@@ -44,7 +71,7 @@ func GetProducts()Products  {
 }
 
 // Simple in-memory products storage
-var productList = Products{
+var productList = []Product{
   {
     ID:1,
     Name:"Rice",

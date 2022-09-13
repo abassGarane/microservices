@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"context"
 	"log"
 	"net/http"
 	"strconv"
@@ -18,10 +19,8 @@ func NewProducts (l *log.Logger) *ProductHandler{
 }
 
 
-func (p *ProductHandler) ServeHTTP(w http.ResponseWriter, r *http.Request)  {
-}
 
-func (p *ProductHandler) GetProducts(w http.ResponseWriter, r *http.Request)  {
+func (p ProductHandler) GetProducts(w http.ResponseWriter, r *http.Request)  {
   p.l.Printf("Recieved a %s request from :: %s", r.Method, r.URL)
   lp := data.GetProducts() 
   //Convert to json
@@ -31,18 +30,13 @@ func (p *ProductHandler) GetProducts(w http.ResponseWriter, r *http.Request)  {
   }
 }
 
-func (p *ProductHandler)AddProduct(w http.ResponseWriter, r *http.Request)  {
+func (p ProductHandler)AddProduct(w http.ResponseWriter, r *http.Request)  {
   p.l.Printf("Recieved a %s request from :: %s", r.Method, r.URL)
-
-	prod := &data.Product{}
-	err:= prod.FromJSON(r.Body)
-	if err != nil{
-		http.Error(w,"Could not unmarshal object", http.StatusBadRequest)
-	}
+	prod := r.Context().Value(ProductKey{}).(data.Product)	
 	data.AddProduct(prod)
 }
 
-func (p *ProductHandler)UpdateProduct(w http.ResponseWriter, r *http.Request)  {
+func (p ProductHandler)UpdateProduct(w http.ResponseWriter, r *http.Request)  {
   p.l.Printf("Recieved a %s request from :: %s", r.Method, r.URL)
 	vars := mux.Vars(r)
 	id , err:= strconv.Atoi(vars["id"])
@@ -51,17 +45,31 @@ func (p *ProductHandler)UpdateProduct(w http.ResponseWriter, r *http.Request)  {
 		http.Error(w,"Could not parse id", http.StatusBadRequest)
 		return
 	}
-
-	prod := &data.Product{}
-	err = prod.FromJSON(r.Body)
-	if err != nil{
-		http.Error(w,"Could not unmarshal object", http.StatusBadRequest)
-	}
-	err = data.UpdateProduct(id,prod)
+	prod := r.Context().Value(ProductKey{}).(data.Product)
+	err = data.UpdateProduct(id,&prod)
 	if err == data.ErrorProductNotFound{
 		http.Error(w,"Could not find product", http.StatusBadRequest)
 		return
 	}
+}
+
+type ProductKey struct{}
+
+func (p ProductHandler) MiddlewareProductValidator( next http.Handler)http.Handler  {
+  p.l.Printf("Reached the product middleware")
+	middleware := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
+		prod := data.Product{}
+		err := prod.FromJSON(r.Body)
+		if err != nil{
+			http.Error(w,"Could not unmarshal object", http.StatusBadRequest)
+			return
+  	}
+  	ctx := context.WithValue(r.Context(), ProductKey{}, prod)
+  	req := r.WithContext(ctx)
+  	next.ServeHTTP(w,req)
+	})
+
+	return middleware
 }
 
 

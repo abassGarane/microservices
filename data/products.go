@@ -23,9 +23,9 @@ func (p *Product) FromJSON(r io.Reader)error  {
 	return e.Decode(p)
 }
 
-func AddProduct(p *Product)  {
+func AddProduct(p Product)  {
 	p.ID = GetNextID()
-	productList = append(productList, *p)
+	productList = append(productList, p)
 }
 
 func UpdateProduct(id int, p *Product)error  {

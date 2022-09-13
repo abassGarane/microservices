@@ -58,13 +58,13 @@ type ProductKey struct{}
 func (p ProductHandler) MiddlewareProductValidator( next http.Handler)http.Handler  {
   p.l.Printf("Reached the product middleware")
 	middleware := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
-		prod := data.Product{}
+		prod := &data.Product{}
 		err := prod.FromJSON(r.Body)
 		if err != nil{
 			http.Error(w,"Could not unmarshal object", http.StatusBadRequest)
 			return
   	}
-  	ctx := context.WithValue(r.Context(), ProductKey{}, prod)
+  	ctx := context.WithValue(r.Context(), ProductKey{}, &prod)
   	req := r.WithContext(ctx)
   	next.ServeHTTP(w,req)
 	})

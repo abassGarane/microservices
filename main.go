@@ -23,6 +23,8 @@ func main()  {
   l := log.New(os.Stdout, "Product Api ::", log.LstdFlags)
 
   h := handlers.NewProducts(l)
+
+  //GET
   GetRouter := mux.Methods(http.MethodGet).Subrouter()
   GetRouter.HandleFunc("/", h.GetProducts)
 

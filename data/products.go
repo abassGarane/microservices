@@ -23,7 +23,7 @@ func (p *Product) FromJSON(r io.Reader)error  {
 	return e.Decode(p)
 }
 
-func AddProduct(p Product)  {
+func AddProduct(p *Product)  {
 	p.ID = GetNextID()
 	productList = append(productList, p)
 }
@@ -34,7 +34,7 @@ func UpdateProduct(id int, p *Product)error  {
 		return err
 	}
 	p.ID = id
-	productList[pos] = *p
+	productList[pos] = p
 	return nil
 }
 
@@ -48,7 +48,7 @@ func findProduct(id int) (*Product,int,error)  {
 	// }
 	for i, p := range productList{
 		if p.ID == id{
-			return &p, i,nil
+			return p, i,nil
 		}
 	}
 	return nil,-1,ErrorProductNotFound
@@ -59,7 +59,7 @@ func GetNextID()int  {
 	return id +1
 }
 
-type Products []Product
+type Products []*Product
 
 func (pp *Products)ToJson(w io.Writer) error  {
   en := json.NewEncoder(w)
@@ -71,7 +71,7 @@ func GetProducts()Products  {
 }
 
 // Simple in-memory products storage
-var productList = []Product{
+var productList = []*Product{
   {
     ID:1,
     Name:"Rice",

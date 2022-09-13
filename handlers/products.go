@@ -33,7 +33,7 @@ func (p ProductHandler) GetProducts(w http.ResponseWriter, r *http.Request)  {
 func (p ProductHandler)AddProduct(w http.ResponseWriter, r *http.Request)  {
   p.l.Printf("Recieved a %s request from :: %s", r.Method, r.URL)
 	prod := r.Context().Value(ProductKey{}).(data.Product)	
-	data.AddProduct(prod)
+	data.AddProduct(&prod)
 }
 
 func (p ProductHandler)UpdateProduct(w http.ResponseWriter, r *http.Request)  {
@@ -58,13 +58,14 @@ type ProductKey struct{}
 func (p ProductHandler) MiddlewareProductValidator( next http.Handler)http.Handler  {
   p.l.Printf("Reached the product middleware")
 	middleware := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request){
-		prod := &data.Product{}
+		prod := data.Product{}
 		err := prod.FromJSON(r.Body)
 		if err != nil{
 			http.Error(w,"Could not unmarshal object", http.StatusBadRequest)
+			println(err)
 			return
   	}
-  	ctx := context.WithValue(r.Context(), ProductKey{}, &prod)
+  	ctx := context.WithValue(r.Context(), ProductKey{}, prod)
   	req := r.WithContext(ctx)
   	next.ServeHTTP(w,req)
 	})

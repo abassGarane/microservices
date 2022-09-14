@@ -11,9 +11,9 @@ import (
 type Product struct{
   ID int    `json:"id"`
   Name string  `json:"name" validate:"required"`
-  Description string `json:"description"`
-  Price float32  `json:"price"`
-  SKU string  `json:"sku"`
+  Description string `json:"description" validate:"required"`
+  Price float32  `json:"price" validate:"required,gte=0,lte=10000"`
+  SKU string  `json:"sku" validate:"required"`
   CreatedAt string `json:"-"`
   UpdatedAt string `json:"-"`
   DeletedAt string `json:"-"`

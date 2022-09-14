@@ -5,11 +5,12 @@ import (
 	"fmt"
 	"io"
 	"time"
+	validator "github.com/go-playground/validator/v10"
 )
 
 type Product struct{
   ID int    `json:"id"`
-  Name string  `json:"name"`
+  Name string  `json:"name" validate:"required"`
   Description string `json:"description"`
   Price float32  `json:"price"`
   SKU string  `json:"sku"`
@@ -21,6 +22,11 @@ type Product struct{
 func (p *Product) FromJSON(r io.Reader)error  {
 	e := json.NewDecoder(r)
 	return e.Decode(p)
+}
+func (p *Product)Validate()error  {
+	
+	validate := validator.New()
+	return validate.Struct(p);
 }
 
 func AddProduct(p *Product)  {

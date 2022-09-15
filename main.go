@@ -10,6 +10,7 @@ import (
 
 	"github.com/abassGarane/microservices/handlers"
 	"github.com/gorilla/mux"
+	"github.com/go-openapi/runtime/middleware"
 )
 
 
@@ -24,9 +25,13 @@ func main()  {
 
   h := handlers.NewProducts(l)
 
+	opts := middleware.RedocOpts{SpecURL: "/swagger.yml"}
+	sh := middleware.Redoc(opts,nil)
   //GET
   GetRouter := mux.Methods(http.MethodGet).Subrouter()
   GetRouter.HandleFunc("/", h.GetProducts)
+  GetRouter.Handle("/docs", sh)
+  GetRouter.Handle("/swagger.yml", http.FileServer(http.Dir("./")))
 
   //PUT
   PutRouter := mux.Methods(http.MethodPut).Subrouter()

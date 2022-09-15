@@ -8,7 +8,7 @@ func TestIsUnderValidation(t *testing.T)  {
     Price: 33.55,
     Description: "A wild stuff",
     Name: "Rice",
-    SKU: "DRCED454",
+    SKU: "abc-def-123",
   } 
   err := p.Validate()
 

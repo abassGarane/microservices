@@ -46,7 +46,7 @@ definitions:
         type: object
         x-go-package: github.com/abassGarane/microservices/data
 info:
-    description: Documentation for Product Api
+    description: '# Documentation for Product Api'
     license:
         name: BSD-3
     title: Product Api.

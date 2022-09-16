@@ -158,17 +158,4 @@ var productList = []*Product{
   },
 
 }
-// swagger:parameters deleteProduct
-type ProductIDParameterWrapper struct{
-	// ID of product to delete from dataStrore
-	// in: path
-	// required: true
-	ID int `json:"id"`
-
-}
-
-//swagger:response noContent updateProduct
-type ProductsNoContentWrapper struct{
-
-}
 

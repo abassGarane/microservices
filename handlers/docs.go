@@ -23,7 +23,7 @@ type productParamsWrapper struct{
 	// requred:true
 	Body data.Product
 }
-// swagger:parameters deleteProduct
+// swagger:parameters deleteProduct updateProduct
 type ProductIDParameterWrapper struct{
 	// ID of product to delete from dataStrore
 	// in: path
@@ -32,7 +32,7 @@ type ProductIDParameterWrapper struct{
 
 }
 
-//swagger:response noContent updateProduct
+//swagger:response  noContent
 type ProductsNoContentWrapper struct{
 
 }

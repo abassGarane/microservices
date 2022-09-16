@@ -3,24 +3,46 @@ consumes:
     - application/json
 definitions:
     Product:
+        description: Product defines the structure for an API Product
         properties:
             description:
+                description: The description of the product
+                maxLength: 10000
                 type: string
                 x-go-name: Description
             id:
+                description: |-
+                    the id for the product
+
+                    requred: false
                 format: int64
+                minimum: 1
                 type: integer
                 x-go-name: ID
             name:
+                description: |-
+                    The name for the product
+
+                    requred: true
+                maxLength: 255
                 type: string
                 x-go-name: Name
             price:
+                description: 'requred: true'
                 format: float
+                minimum: 0.01
                 type: number
                 x-go-name: Price
             sku:
+                description: |-
+                    The sku for the product
+
+                    requred:true
+                pattern: '[a-z]+-[a-z]+-[1-9]'
                 type: string
                 x-go-name: SKU
+        required:
+            - description
         type: object
         x-go-package: github.com/abassGarane/microservices/data
 info:
@@ -39,9 +61,58 @@ paths:
                     $ref: '#/responses/productsRespose'
             tags:
                 - products
+        post:
+            description: Adds a product into dataStore
+            operationId: addProduct
+            parameters:
+                - description: Product struct to update Product  or Add Product
+                  in: body
+                  name: Body
+                  schema:
+                    $ref: '#/definitions/Product'
+            responses:
+                "200":
+                    $ref: '#/responses/productResponse'
+            tags:
+                - products
+    /products/{id}:
+        delete:
+            description: deletes a product from Datastore
+            operationId: deleteProduct
+            parameters:
+                - description: ID of product to delete from dataStrore
+                  format: int64
+                  in: path
+                  name: id
+                  required: true
+                  type: integer
+                  x-go-name: ID
+            responses:
+                "201":
+                    $ref: '#/responses/noContent'
+            tags:
+                - products
+        put:
+            description: Updates a product in the dataStore
+            operationId: updateProduct
+            parameters:
+                - description: Product struct to update Product  or Add Product
+                  in: body
+                  name: Body
+                  schema:
+                    $ref: '#/definitions/Product'
+            responses:
+                "201":
+                    $ref: '#/responses/noContent'
+            tags:
+                - products
 produces:
     - application/json
 responses:
+    productResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/Product'
     productsRespose:
         description: A list of products returned as a response
         schema:

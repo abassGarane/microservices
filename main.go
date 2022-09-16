@@ -31,7 +31,8 @@ func main()  {
   GetRouter := mux.Methods(http.MethodGet).Subrouter()
   GetRouter.HandleFunc("/", h.GetProducts)
   GetRouter.Handle("/docs", sh)
-  GetRouter.Handle("/swagger.yml", http.FileServer(http.Dir("./")))
+	// insecure -> all files on ./ directory are assessible 
+  GetRouter.Handle("/swagger.yml", http.FileServer(http.Dir("./"))) 
 
   //PUT
   PutRouter := mux.Methods(http.MethodPut).Subrouter()
@@ -43,6 +44,9 @@ func main()  {
   PostRouter.Use(h.MiddlewareProductValidator)
   PostRouter.HandleFunc("/", h.AddProduct)
 	// mux.Handle("/products", h).Methods("GET")
+
+	DeleteRouter := mux.Methods(http.MethodDelete).Subrouter()
+	DeleteRouter.HandleFunc("/{id:[0-9]+}", h.DeleteProduct)
 
 
 	// Create a server

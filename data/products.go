@@ -10,12 +10,40 @@ import (
 	validator "github.com/go-playground/validator/v10"
 )
 
+// Product defines the structure for an API Product
+// swagger:model
 type Product struct{
+
+	// the id for the product
+	//
+	//requred: false
+	// min: 1
   ID int    `json:"id"`
+
+  // The name for the product
+  //
+  // requred: true
+  // max length: 255
   Name string  `json:"name" validate:"required"`
+
+  // The description of the product
+  //
+  // required: true
+  //max length: 10000
   Description string `json:"description" validate:"required"`
+
+  // The price of the product
+
+  // requred: true
+  // min:0.01
   Price float32  `json:"price" validate:"required,gte=0,lte=10000"`
+
+  // The sku for the product
+  //
+  // requred:true
+  // pattern:[a-z]+-[a-z]+-[1-9]
   SKU string  `json:"sku" validate:"required,sku"`
+
   CreatedAt string `json:"-"`
   UpdatedAt string `json:"-"`
   DeletedAt string `json:"-"`
@@ -72,6 +100,23 @@ func findProduct(id int) (*Product,int,error)  {
 	}
 	return nil,-1,ErrorProductNotFound
 }
+func findIndexByProductID(id int) int  {
+	for i, p := range productList{
+		if p.ID == id{
+			return i
+		}
+	}
+	return -1
+}
+
+func DeleteProduct (id int)error{
+	i := findIndexByProductID(id)
+	if  i == -1{
+		return ErrorProductNotFound
+	}
+	productList = append(productList[:i],productList[:i+1]...)
+	return nil
+}
 
 func GetNextID()int  {	
 	id := productList[len(productList) - 1].ID
@@ -113,3 +158,17 @@ var productList = []*Product{
   },
 
 }
+// swagger:parameters deleteProduct
+type ProductIDParameterWrapper struct{
+	// ID of product to delete from dataStrore
+	// in: path
+	// required: true
+	ID int `json:"id"`
+
+}
+
+//swagger:response noContent updateProduct
+type ProductsNoContentWrapper struct{
+
+}
+

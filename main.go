@@ -70,6 +70,7 @@ func main()  {
 
 	sig := <- sigChan
 	l.Printf("Commencing graceful shutdown %s", sig)
-	ctx,_:= context.WithTimeout(context.Background(), time.Second*30)
+	ctx,Cancel:= context.WithTimeout(context.Background(), time.Second*30)
+	defer Cancel()
 	s.Shutdown(ctx)
 }

@@ -10,6 +10,7 @@ import (
 
 	"github.com/abassGarane/microservices/handlers"
 	"github.com/gorilla/mux"
+	gohandlers "github.com/gorilla/handlers"
 	"github.com/go-openapi/runtime/middleware"
 )
 
@@ -48,12 +49,14 @@ func main()  {
 	DeleteRouter := mux.Methods(http.MethodDelete).Subrouter()
 	DeleteRouter.HandleFunc("/{id:[0-9]+}", h.DeleteProduct)
 
+	//CORS
+	cors := gohandlers.CORS(gohandlers.AllowedOrigins([]string{"*"}))
 
 	// Create a server
 	s := &http.Server{
 		IdleTimeout: time.Second * 60,
 		Addr: ":8080",
-		Handler: mux,
+		Handler: cors(mux),
 		ReadTimeout: time.Second * 60,
 		WriteTimeout: time.Second * 60,
 	}

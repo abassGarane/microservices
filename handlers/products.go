@@ -17,19 +17,12 @@ package handlers
 
 import "log"
 
-type ProductHandler struct{
-  l *log.Logger
+type ProductHandler struct {
+	l *log.Logger
 }
 
-
-func NewProducts (l *log.Logger) *ProductHandler{
-  return &ProductHandler{l}
+func NewProducts(l *log.Logger) *ProductHandler {
+	return &ProductHandler{l}
 }
 
 type ProductKey struct{}
-
-
-
-
-
-

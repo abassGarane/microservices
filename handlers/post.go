@@ -12,9 +12,8 @@ import (
 //  200: productResponse
 
 // AddProduct adds a new product into the dataStore
-func (p ProductHandler)AddProduct(w http.ResponseWriter, r *http.Request)  {
-  p.l.Printf("Recieved a %s request from :: %s", r.Method, r.URL)
-	prod := r.Context().Value(ProductKey{}).(data.Product)	
+func (p ProductHandler) AddProduct(w http.ResponseWriter, r *http.Request) {
+	p.l.Printf("Recieved a %s request from :: %s", r.Method, r.URL)
+	prod := r.Context().Value(ProductKey{}).(data.Product)
 	data.AddProduct(&prod)
 }
-

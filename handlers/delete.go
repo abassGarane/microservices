@@ -15,21 +15,19 @@ import (
 //  201: noContent
 
 // DeleteProduct deletes a product from database
-func (p ProductHandler) DeleteProduct(w http.ResponseWriter, r *http.Request )  {
+func (p ProductHandler) DeleteProduct(w http.ResponseWriter, r *http.Request) {
 	p.l.Printf("Recieved a %s request from :: %s", r.Method, r.URL)
 	vars := mux.Vars(r)
-	id , err:= strconv.Atoi(vars["id"])
+	id, err := strconv.Atoi(vars["id"])
 	p.l.Printf("ID is :: %d", id)
-	if err != nil{
-		http.Error(w,"Could not parse id", http.StatusBadRequest)
+	if err != nil {
+		http.Error(w, "Could not parse id", http.StatusBadRequest)
 		return
 	}
 	err = data.DeleteProduct(id)
-	if err != nil{
-		http.Error(w,fmt.Sprintf("Could not delete product:: %s", err), http.StatusBadRequest)
+	if err != nil {
+		http.Error(w, fmt.Sprintf("Could not delete product:: %s", err), http.StatusBadRequest)
 		return
 	}
 	w.WriteHeader(http.StatusNoContent)
 }
-
-

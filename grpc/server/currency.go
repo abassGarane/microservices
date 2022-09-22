@@ -2,7 +2,7 @@ package server
 
 import (
 	"context"
-	"github.com/abassGarane/currency/protos"
+	"github.com/abassGarane/microservices/grpc/protos"
 	"github.com/hashicorp/go-hclog"
 )
 

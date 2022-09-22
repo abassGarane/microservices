@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/abassGarane/currency/protos"
-	"github.com/abassGarane/currency/server"
+	"github.com/abassGarane/microservices/grpc/protos"
+	"github.com/abassGarane/microservices/grpc/server"
 	"github.com/hashicorp/go-hclog"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/reflection"

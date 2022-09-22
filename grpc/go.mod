@@ -1,4 +1,4 @@
-module github.com/abassGarane/currency
+module github.com/abassGarane/microservices/grpc
 
 go 1.19
 

@@ -15,14 +15,18 @@
 // swagger:meta
 package handlers
 
-import "log"
+import (
+	"github.com/abassGarane/microservices/grpc/protos"
+	"log"
+)
 
 type ProductHandler struct {
-	l *log.Logger
+	l  *log.Logger
+	cc *protos.CurrencyClient
 }
 
-func NewProducts(l *log.Logger) *ProductHandler {
-	return &ProductHandler{l}
+func NewProducts(l *log.Logger, c *protos.CurrencyClient) *ProductHandler {
+	return &ProductHandler{l, c}
 }
 
 type ProductKey struct{}
